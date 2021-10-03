@@ -27,24 +27,42 @@ def Shennon(list_):
 
     if len(list_[index:])!=1:
         Shennon(list_[index:])
-        
-#orig_text = input()
-input_ = stdin.readlines()
-orig_text = ''.join(map(lambda x: x.rstrip(),input_))
+def Huffman(list_):
+    
+    return
+def Choice_and_output():
+    choice = input('1-Шеннон-Фано\n2-Хаффман\n')
+    if choice=='1':
+        Shennon(list_frequ)
+    elif choice=='2':
+        Huffman()
+    else:
+        print('Так и не выбрали как кодировать')
+        return
+    
+    print('|','Cимвол','|','Вероятность','|','Код',' '*7,'|')
+    print('|','_'*6,'|','_'*11,'|','_'*11,'|')
+    for i in list_frequ:
+        print('|',i[0],' '*(5-len(str(i[0]))),'|',i[1],' '*(10-len(str(i[1]))),'|',Code[i[0]],' '*(10-len(str(Code[i[0]]))),'|')
+        print('|','_'*6,'|','_'*11,'|','_'*11,'|')
+    #print('Список типа: "символ" - "частота появления"\n',list_frequ)
+    #print('Словарь типа: "символ" - "код"\n',Code)
+    print('Закодированное сообщение:\n',''.join([Code[i] if i!='\n' else i+' ' for j in input_ for i in j]))
+    print('-'*100)
 
-unic_char = sorted(list(set(orig_text)))
-len_text = len(orig_text)
-list_frequ = sorted([(char,round(orig_text.count(char)/len_text, 4)) for char in unic_char],key = lambda x: (-x[1], x[0]))
-Code = {char : '' for char in unic_char}
+    entropy = round(-sum([(i[1]*log2(i[1])) for i in list_frequ]),4)
+    print('Энтропия -- ', entropy)
+    averg_len = round(sum([ i[1]*len(Code[i[0]]) for i in list_frequ]),4)
+    print('Средняя длина кода -- ', averg_len)
+    print(f'Критерий эффективности\n Абсолютный: {round(averg_len-entropy,4)}\n Относительный: {round((averg_len-entropy)/entropy*100, 4)} %')
 
-print('Список типа: "символ" - "частота появления"\n',list_frequ)
-Shennon(list_frequ)
-print('Словарь типа: "символ" - "код"\n',Code)
-print('Закодированное сообщение:\n',''.join([Code[i] if i!='\n' else i+' ' for j in input_ for i in j]))
-print('-'*100)
+if __name__ == '__main__':
+    #orig_text = input()
+    input_ = stdin.readlines()
+    orig_text = ''.join(map(lambda x: x.rstrip(),input_))
 
-entropy = round(-sum([(i[1]*log2(i[1])) for i in list_frequ]),4)
-print('Энтропия -- ', entropy)
-averg_len = round(sum([ i[1]*len(Code[i[0]]) for i in list_frequ]),4)
-print('Средняя длина кода -- ', averg_len)
-print(f'Критерий эффективности\n Абсолютный: {round(averg_len-entropy,4)}\n Относительный: {round((averg_len-entropy)/entropy*100, 4)} %')
+    unic_char = sorted(list(set(orig_text)))
+    len_text = len(orig_text)
+    list_frequ = sorted([(char,round(orig_text.count(char)/len_text, 4)) for char in unic_char],key = lambda x: (-x[1], x[0]))
+    Code = {char : '' for char in unic_char}
+    Choice_and_output()
