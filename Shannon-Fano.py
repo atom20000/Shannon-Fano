@@ -44,6 +44,22 @@ def encode_tree(tuple_,sym):
         symbol_code([[tuple_[1]]],sym+'1')
     else:
         encode_tree(tuple_[1],sym+'1')
+
+def Encode(code_text):
+    Code_char = { i[1] : i[0] for i in Code.items()}
+    encode_text=''
+    sym =''
+    for i in code_text:
+        sym+=i
+        if Code_char.get(sym.strip()) != None:
+            encode_text+=Code_char[sym.strip()]
+            sym=''
+        elif sym == '\n': 
+            encode_text+=(sym+' ')
+            sym = ''
+    return encode_text
+
+
 def Choice_and_output():
     choice = input('1-Шеннон-Фано\n2-Хаффман\n')
     if choice=='1':
@@ -62,7 +78,8 @@ def Choice_and_output():
         
     #print('Список типа: "символ" - "частота появления"\n',list_frequ)
     #print('Словарь типа: "символ" - "код"\n',Code)
-    print('Закодированное сообщение:\n',''.join([Code[i] if i!='\n' else i+' ' for j in input_ for i in j]))
+    code_text = ''.join([Code[i] if i!='\n' else i+' ' for j in input_ for i in j])
+    print('Закодированное сообщение:\n', code_text)
     print('-'*100)
 
     entropy = round(-sum([(i[1]*log2(i[1])) for i in list_frequ]),4)
@@ -70,6 +87,8 @@ def Choice_and_output():
     averg_len = round(sum([ i[1]*len(Code[i[0]]) for i in list_frequ]),4)
     print('Средняя длина кода -- ', averg_len)
     print(f'Критерий эффективности\n Абсолютный: {round(averg_len-entropy,4)}\n Относительный: {round((averg_len-entropy)/entropy*100, 4)} %')
+    
+    print('Раскодированное сообщение\n', Encode(code_text))
 
 if __name__ == '__main__':
     #orig_text = input()
@@ -80,4 +99,5 @@ if __name__ == '__main__':
     len_text = len(orig_text)
     list_frequ = sorted([(char,round(orig_text.count(char)/len_text, 4)) for char in unic_char],key = lambda x: (-x[1], x[0]))
     Code = {char : '' for char in unic_char}
+    Code_char = {}
     Choice_and_output()
