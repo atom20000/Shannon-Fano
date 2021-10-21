@@ -1,7 +1,11 @@
 from sys import stdin
 from math import log2
+from anytree import Node, RenderTree
+from anytree.exporter import DotExporter
 # Надо переписать ввод на многострочный, пока для реализации самого алгоритма
 # сделаем однострочный ввод (Уже сделали)
+
+root = Node('root')
 
 def symbol_code(arr, sym):
     for i in arr:
@@ -33,17 +37,21 @@ def Huffman(list_):
         one_elem = list_.pop()
         list_.append(((one_elem[0],two_elem[0]),round(one_elem[1]+two_elem[1],4)))
         list_.sort(key = lambda x: -x[1])
-    encode_tree(list_[0][0],'')
+    encode_tree(list_[0][0],'',root)
     
-def encode_tree(tuple_,sym):
+def encode_tree(tuple_,sym,parent):
     if isinstance(tuple_[0],str):
         symbol_code([[tuple_[0]]],sym+'0')
+        last_node = Node(sym+'0',parent)
+        Node(tuple_[0],last_node)
     else:
-        encode_tree(tuple_[0],sym+'0')
+        encode_tree(tuple_[0],sym+'0',Node(sym+'0',parent))
     if isinstance(tuple_[1],str):
         symbol_code([[tuple_[1]]],sym+'1')
+        last_node = Node(sym+'1',parent)
+        Node(tuple_[1],last_node)
     else:
-        encode_tree(tuple_[1],sym+'1')
+        encode_tree(tuple_[1],sym+'1',Node(sym+'1',parent))
 
 def Encode(code_text):
     Code_char = { i[1] : i[0] for i in Code.items()}
@@ -89,6 +97,7 @@ def Choice_and_output():
     print(f'Критерий эффективности\n Абсолютный: {round(averg_len-entropy,4)}\n Относительный: {round((averg_len-entropy)/entropy*100, 4)} %')
     
     print('Раскодированное сообщение\n', Encode(code_text))
+    DotExporter(root).to_picture('tree.png')
 
 if __name__ == '__main__':
     #orig_text = input()
