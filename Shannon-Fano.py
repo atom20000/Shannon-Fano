@@ -2,8 +2,7 @@ from sys import stdin
 from math import log2
 from anytree import Node, RenderTree
 from anytree.exporter import DotExporter
-# Надо переписать ввод на многострочный, пока для реализации самого алгоритма
-# сделаем однострочный ввод (Уже сделали)
+
 
 root = Node('root')
 
@@ -70,37 +69,41 @@ def Encode(code_text):
 
 def Choice_and_output():
     choice = input('1-Шеннон-Фано\n2-Хаффман\n')
+    name_file = input('Название файла сохранения\n')
     if choice=='1':
         Shennon(list_frequ.copy())
+        name_file = name_file+'_sh.txt'
     elif choice=='2':
         Huffman(list_frequ.copy())
+        DotExporter(root).to_picture(f'{name_file}_tre_ha.png')
+        name_file = name_file+'_ha.txt'
     else:
         print('Так и не выбрали как кодировать')
         return
-    
-    print('|','Cимвол','|','Вероятность','|','Код',' '*7,'|')
-    print('|','_'*6,'|','_'*11,'|','_'*11,'|')
-    for i in list_frequ:
-        print('|',i[0],' '*(5-len(str(i[0]))),'|',i[1],' '*(10-len(str(i[1]))),'|',Code[i[0]],' '*(10-len(str(Code[i[0]]))),'|')
-        print('|','_'*6,'|','_'*11,'|','_'*11,'|')
+    with open(name_file,'w') as file:
+        file.write(''.join(('|','Cимвол','|','Вероятность','|','Код',' '*8,'|','\n')))
+        file.write(''.join(('|','_'*6,'|','_'*11,'|','_'*11,'|','\n')))
+        for i in list_frequ:
+            file.write(''.join(('|',i[0],' '*(6-len(i[0])),'|',str(i[1]),' '*(11-len(str(i[1]))),'|',Code[i[0]],' '*(11-len(str(Code[i[0]]))),'|','\n')))
+            file.write(''.join(('|','_'*6,'|','_'*11,'|','_'*11,'|','\n')))
         
     #print('Список типа: "символ" - "частота появления"\n',list_frequ)
     #print('Словарь типа: "символ" - "код"\n',Code)
-    code_text = ''.join([Code[i] if i!='\n' else i+' ' for j in input_ for i in j])
-    print('Закодированное сообщение:\n', code_text)
-    print('-'*100)
+        code_text = ''.join([Code[i] if i!='\n' else i+' ' for j in input_ for i in j])
+    #print('Закодированное сообщение:\n', code_text)
+        file.write(''.join(('-'*100,'\n')))
 
-    entropy = round(-sum([(i[1]*log2(i[1])) for i in list_frequ]),4)
-    print('Энтропия -- ', entropy)
-    averg_len = round(sum([ i[1]*len(Code[i[0]]) for i in list_frequ]),4)
-    print('Средняя длина кода -- ', averg_len)
-    print(f'Критерий эффективности\n Абсолютный: {round(averg_len-entropy,4)}\n Относительный: {round((averg_len-entropy)/entropy*100, 4)} %')
-    
-    print('Раскодированное сообщение\n', Encode(code_text))
-    DotExporter(root).to_picture('tree.png')
+        entropy = round(-sum([(i[1]*log2(i[1])) for i in list_frequ]),4)
+        file.write(''.join(('Энтропия -- ', str(entropy),'\n')))
+        averg_len = round(sum([ i[1]*len(Code[i[0]]) for i in list_frequ]),4)
+        file.write(''.join(('Средняя длина кода -- ', str(averg_len),'\n')))
+        file.write(f'Критерий эффективности\n Абсолютный: {round(averg_len-entropy,4)}\n Относительный: {round((averg_len-entropy)/entropy*100, 4)} % \n')
+        file.write(''.join(('-'*100,'\n')))
+        file.write(Encode(code_text))
 
 if __name__ == '__main__':
     #orig_text = input()
+    print('Текст для кодирования:')
     input_ = stdin.readlines()
     orig_text = ''.join(map(lambda x: x.rstrip(),input_))
 
