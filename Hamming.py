@@ -2,7 +2,7 @@ import numpy
 class Hamming():   
 
     def __init__(self):
-        self.code = list(input())
+        self.code = list(input('ввести число'))
 
     def insert_ex_bit(self):
         i = 0
@@ -16,7 +16,7 @@ class Hamming():
         #print(''.join(self.code), '       ', len(self.code))
 
 
-    def _sum_bit(list_code, step):
+    def _sum_bit(self, list_code, step):
         sum_bit = 0
         for j in range(step):
             #import pdb;pdb.set_trace()
@@ -49,7 +49,8 @@ class Hamming():
         error_bit = 0
         while pow_ := 2**j:
             if pow_ <= len(self.code):
-                if self._sum_bit(self.code,pow_)%2>0:
+                #import pdb; pdb.set_trace()
+                if self._sum_bit(self.code, pow_) %2>0:
                     error_bit +=pow_
                 j+=1
             else:
@@ -113,15 +114,16 @@ class Entropy():
     def __init__(self):
         self.mat = numpy.array(
             [
-                [.3, .2, 0.000000000000001],
-                [0.0000000000000001, .05, .1],
-                [0.0000000000000001, .1, .25]
+                [.15, 0.000000000000001, 0.1],
+                [0.15, .2, .2],
+                [0.05, 0.0000000000000001, .15]
             ],
             numpy.float64
         )
         self.P_x = numpy.sum(self.mat, axis=1)
         self.P_y = numpy.sum(self.mat, axis=0)
         self.P_x_Y = self.mat/self.P_x
+        self.P_y_X = self.mat/self.P_y
 
     @property
     def H_X(self):
@@ -136,9 +138,29 @@ class Entropy():
         return numpy.sum(-self.mat*numpy.log2(self.P_x_Y))
 
     @property
+    def H_y_X(self):
+        return numpy.sum(-self.mat*numpy.log2(self.P_y_X))
+
+    @property
     def H_X_Y(self):
         return numpy.sum(-self.mat*numpy.log2(self.mat))
 
     @property
     def E_X_Y(self):
-        return numpy.sum(self.H_X+self.H_Y-self.H_Y)
+        return numpy.sum(self.H_X+self.H_Y-self.H_X_Y)
+
+class NormalForm():
+    
+    def __init__(self):
+        c = input('число для нормализации')
+        if c[1] == '-':
+            self.sym = 1
+            self.a = bin(int(c.split('.')[0][1:]))
+        else:
+            self.a = bin(int(c.split('.')[0]))
+        self.b = int(c.split('.')[1])
+    def perevod_drobno(self):
+        pass
+if __name__ == '__main__':
+    entropy = Entropy()
+    print(entropy.H_X_Y)
